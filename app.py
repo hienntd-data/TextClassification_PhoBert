@@ -66,7 +66,7 @@ class NewsClassifier(nn.Module):
         x = self.fc(x)
         return x
 
-@st.cache
+st.cache_resource
 def load_models(model_type):
     models = None
     model = None
