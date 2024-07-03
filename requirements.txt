@@ -384,7 +384,6 @@ requirements-parser==0.9.0
 rich==13.7.1
 rmm-cu12==24.4.0
 rpds-py==0.18.1
-rpy2==3.4.2
 rsa==4.9
 safetensors==0.4.3
 scikit-image==0.19.3
