@@ -1,0 +1,6 @@
+phonlp/phonlp.pt filter=lfs diff=lfs merge=lfs -text
+data/features_162k_phobertbase.pkl filter=lfs diff=lfs merge=lfs -text
+data/train_data_162k.json filter=lfs diff=lfs merge=lfs -text
+data/test_data_162k.json filter=lfs diff=lfs merge=lfs -text
+data/val_data_162k.json filter=lfs diff=lfs merge=lfs -text
+models/* filter=lfs diff=lfs merge=lfs -text
