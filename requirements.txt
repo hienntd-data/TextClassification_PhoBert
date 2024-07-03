@@ -67,12 +67,6 @@ dask==2023.8.1
 datascience==0.17.6
 db-dtypes==1.2.0
 dbus-python==1.2.18
-debugpy==1.6.6
-decorator==4.4.2
-defusedxml==0.7.1
-distributed==2023.8.1
-distro==1.7.0
-dlib==19.24.4
 etils==1.7.0
 etuples==0.3.9
 exceptiongroup==1.2.1
