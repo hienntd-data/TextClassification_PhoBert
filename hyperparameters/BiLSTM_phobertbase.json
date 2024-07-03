@@ -1,0 +1,1 @@
+{"lstm_units_1": 224, "lstm_units_2": 144, "dense_units": 160, "dropout_rate": 0.4, "learning_rate": 0.0006793443367131475, "epochs": 30, "batch_size": 192}

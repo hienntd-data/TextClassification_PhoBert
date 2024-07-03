@@ -1,0 +1,4 @@
+Model,Precision,Recall,F1-Score,Accuracy,Training Time
+BiLSTM+PhoBert,88.47%,88.46%,88.44%,88.46%,192.62 seconds + 8057.01 seconds (feature extraction)
+Longformer-PhoBert,91.63%,91.64%,91.63%,91.64%,275155.18 seconds
+PhoBert-base,90.50%,90.51%,90.50%,90.51%,130717.66 seconds
