@@ -65,7 +65,6 @@ cymem==2.0.8
 Cython==3.0.10
 dask==2023.8.1
 datascience==0.17.6
-db-dtypes==1.2.0
 etils==1.7.0
 etuples==0.3.9
 exceptiongroup==1.2.1
