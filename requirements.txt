@@ -191,8 +191,6 @@ ipython-sql==0.5.0
 ipytree==0.2.2
 ipywidgets==7.7.1
 itsdangerous==2.2.0
-jax==0.4.26
-jaxlib==0.4.26+cuda12.cudnn89
 jeepney==0.7.1
 jellyfish==1.0.4
 jieba==0.42.1
