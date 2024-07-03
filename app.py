@@ -135,7 +135,13 @@ def tokenize_text(text, tokenizer, max_len=256):
         return_tensors='pt',
     )
     return tokenized['input_ids'], tokenized['attention_mask']
+def get_vector_embedding(padded, attention_mask, phobert):
+    # Obtain features from BERT
+    with torch.no_grad():
+        last_hidden_states = phobert(input_ids=padded, attention_mask=attention_mask)
 
+    v_features = last_hidden_states[0][:, 0, :].numpy()
+    return v_features
 # Function to get BERT features
 def get_bert_features(input_ids, attention_mask, phobert):
     with torch.no_grad():
