@@ -94,6 +94,7 @@ def load_models(model_type):
     elif model_type == 'bilstm_phobertbase':
         model = load_model("models/bilstm_phobertbase.h5", compile=False)
         tokenizer = AutoTokenizer.from_pretrained("vinai/phobert-base-v2")
+	phobert = AutoModel.from_pretrained("vinai/phobert-base-v2")
         max_len = 256
     else:
         raise ValueError("Invalid model type specified.")
@@ -101,7 +102,7 @@ def load_models(model_type):
     if models is not None:
         return models, tokenizer, max_len
     else:
-        return model, tokenizer, max_len
+        return model, tokenizer, max_len, phobert
 
 
 
