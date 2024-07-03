@@ -226,9 +226,6 @@ nbclassic==1.1.0
 nbclient==0.10.0
 nbconvert==6.5.4
 nbformat==5.10.4
-nest-asyncio==1.6.0
-networkx==3.3
-nibabel==4.0.2
 nltk==3.8.1
 notebook==6.5.5
 notebook_shim==0.2.4
