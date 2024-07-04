@@ -30,6 +30,8 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 logging.getLogger('streamlit').setLevel(logging.ERROR)
 # Set up the Streamlit page
 st.set_page_config(layout='wide')
+# Clear all cached data
+st.cache_data.clear()
 
 # Define variables
 PREPROCESSED_DATA = "data/val_data_162k.json"
