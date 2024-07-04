@@ -26,12 +26,10 @@ from sklearn.model_selection import StratifiedKFold
 # Evaluate
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-# Set the logging level to ERROR to hide warnings
-logging.getLogger('streamlit').setLevel(logging.ERROR)
+
 # Set up the Streamlit page
 st.set_page_config(layout='wide')
-# Clear all cached data
-st.cache_data.clear()
+
 
 # Define variables
 PREPROCESSED_DATA = "data/val_data_162k.json"
@@ -70,7 +68,7 @@ class NewsClassifier(nn.Module):
         x = self.fc(x)
         return x
 
-st.cache_data
+@st.cache_data
 def load_models(model_type):
     models = None
     model = None
