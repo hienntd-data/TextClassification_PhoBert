@@ -12,7 +12,7 @@ import re
 
 # Visualize
 import numpy as np
-
+import logging
 
 # Model
 import tensorflow as tf
@@ -26,6 +26,8 @@ from sklearn.model_selection import StratifiedKFold
 # Evaluate
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
+# Set the logging level to ERROR to hide warnings
+logging.getLogger('streamlit').setLevel(logging.ERROR)
 # Set up the Streamlit page
 st.set_page_config(layout='wide')
 
