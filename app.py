@@ -314,7 +314,7 @@ def main():
                     processed_news = preprocess_text(news_text)
                     predicted_label, confidence_df = predict_label(processed_news, tokenizer, phobert, model, class_names, max_len)
                     st.subheader("Confidence Per Label")
-                    st.dataframe(confidence_df, use_container_width=True)
+                    st.dataframe(confidence_df, height=600, hide_index=True, use_container_width=True)
                     st.subheader("Predicted Label")
                     st.success(predicted_label)
                 
@@ -327,7 +327,7 @@ def main():
                     st.header("Predict")
                     df_confidence, predicted_label = infer(news_text, tokenizer, models, class_names, max_len)
                     st.subheader("Confidence Per Label")
-                    st.dataframe(df_confidence, use_container_width=True)
+                    st.dataframe(df_confidence, height=600, hide_index=True, use_container_width=True)
                     st.subheader("Predicted Label")
                     st.success(predicted_label)
          if model_choice == "phobertbase":
@@ -339,7 +339,7 @@ def main():
                     st.header("Predict")
                     df_confidence, predicted_label = infer(news_text, tokenizer, models, class_names, max_len)
                     st.subheader("Confidence Per Label")
-                    st.dataframe(df_confidence, use_container_width=True)
+                    st.dataframe(df_confidence, height=600, hide_index=True, use_container_width=True)
                     st.subheader("Predicted Label")
                     st.success(predicted_label)
     if choice == "Train and Evaluate Models":
