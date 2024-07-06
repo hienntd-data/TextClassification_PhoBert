@@ -20,11 +20,11 @@ session = InteractiveSession(config=config)
 
 """### **Load data**"""
 
-# Load dữ liệu từ file pickle
+# Load data
 with open('data/features_162k_phobertbase.pkl', 'rb') as f:
     data_dict = pickle.load(f)
 
-# Trích xuất các đặc trưng và nhãn từ dictionary
+
 X_train = np.array(data_dict['X_train'])
 X_val = np.array(data_dict['X_val'])
 X_test = np.array(data_dict['X_test'])
@@ -42,20 +42,20 @@ y_val = y_val.values.astype(int)
 def build_bilstm_model(lstm_units_1, lstm_units_2, dense_units, dropout_rate, learning_rate):
     model = Sequential()
     model.add(Input(shape=(X_train.shape[1], X_train.shape[2])))
-    # Lớp LSTM 1 với dropout
+    # LSTM Layer 1 with dropout
     model.add(Bidirectional(LSTM(lstm_units_1, return_sequences=True)))
     model.add(Dropout(dropout_rate))
-    # Lớp LSTM 2 với dropout
+    # LSTM Layer 2 with dropout
     model.add(Bidirectional(LSTM(lstm_units_2, return_sequences=False)))
     model.add(Dropout(dropout_rate))
-    # Lớp Dense với dropout và kích hoạt ReLU
+    # Dense Layer with dropout and ReLU activation
     model.add(Dense(dense_units, activation='relu'))
     model.add(Dropout(dropout_rate))
-    # Lớp Dense cuối cùng với kích hoạt softmax
+    # Final Dense Layer with softmax activation
     model.add(Dense(y_train.shape[1], activation='softmax'))
-    # Sử dụng tối ưu hóa Adam với learning rate được truyền vào
+    # Use Adam optimizer with the specified learning rate
     optimizer = Adam(learning_rate=learning_rate)
-    # Biên soạn mô hình
+    # Compile the model
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
     return model
