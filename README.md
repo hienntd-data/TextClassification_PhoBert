@@ -1,5 +1,5 @@
 ---
-title: Text Classification using PhoBert
+title: Text Classification using PhoBERT
 emoji: 🤗
 colorFrom: blue
 colorTo: green
@@ -7,4 +7,4 @@ sdk: streamlit
 app_file: app.py
 pinned: false
 ---
-# TextClassification_PhoBert
+# TextClassification_PhoBERT
