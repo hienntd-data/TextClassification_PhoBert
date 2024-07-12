@@ -28,7 +28,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 
 # Set up the Streamlit page
-st.set_page_config(layout='wide')
+st.set_page_config(layout='wide', page_title="News Classifier App", page_icon="📑")
 
 
 # Define variables
@@ -45,7 +45,7 @@ class_names = ['Cong nghe', 'Doi song', 'Giai tri', 'Giao duc', 'Khoa hoc', 'Kin
 class NewsClassifier(nn.Module):
     def __init__(self, n_classes, model_name):
         super(NewsClassifier, self).__init__()
-        # Load a pre-trained BERT model
+        # Load a pre-trained model
         self.bert = AutoModel.from_pretrained(model_name)
         # Dropout layer to prevent overfitting
         self.drop = nn.Dropout(p=0.3)
@@ -56,7 +56,7 @@ class NewsClassifier(nn.Module):
         nn.init.normal_(self.fc.bias, 0)
 
     def forward(self, input_ids, attention_mask):
-        # Get the output from the BERT model
+        # Get the output from the model
         last_hidden_state, output = self.bert(
             input_ids=input_ids,
             attention_mask=attention_mask,
@@ -138,6 +138,9 @@ def tokenize_text(text, tokenizer, max_len=256):
         return_tensors='pt',
     )
     return tokenized['input_ids'], tokenized['attention_mask']
+
+
+
 def get_vector_embedding(padded, attention_mask, phobert):
     # Obtain features from BERT
     with torch.no_grad():
@@ -237,27 +240,31 @@ def plot_data(train_html_path, test_html_path, val_html_path):
 def main():
     
     #st.title("News Classifier App")
-    activities = ["Introduction", "Text Preprocessing", "Feature Extraction", "Train and Evaluate Models", "Prediction"]
+    activities = ["Introduction", "About the Dataset","Text Preprocessing", "Feature Extraction", "Train and Evaluate Models", "Prediction"]
     choice = st.sidebar.selectbox("Choose Activity", activities)
 
+    # Dataset
+    if choice == "About the Dataset":
+        st.info("About the Dataset")
+        st.markdown("This dataset consists of Vietnamese news articles collected from various Vietnamese online news portals such as Thanh Nien, VNExpress, BaoMoi, etc. The dataset was originally sourced from a MongoDB dump containing over 20 million articles.")
+        st.markdown("From this large dataset, our team extracted approximately 162,000 articles categorized into 13 distinct categorie and split into training, test and validation sets after preprocessing the data with 70%, 15% and 15% respectively.")
+        st.markdown("Link to dataset: https://github.com/binhvq/news-corpus")
+        st.image("images/sample_data.png", caption="Sample original data", use_column_width=True)
+        summary_df = pd.read_csv("assets/summary_data.csv")
+        st.dataframe(summary_df, hide_index=True, use_container_width=True)
+        train_images = "images/article_by_categories_train_data.html"
+        test_images = "images/article_by_categories_test_data.html"
+        val_images = "images/article_by_categories_val_data.html"
+        plot_data(train_images, test_images, val_images)
+        st.image("images/token_length_distribution.png",caption="Distribution of Token Count per Sentence", use_column_width=True)
+        
     # Preprocessing data
     if choice == "Text Preprocessing":
         st.info("Text Preprocessing")
-        preprocessing_task = ["No Options", "Data Overview", "Process Text Demo", "Load Preprocessed Data"]
+        preprocessing_task = ["No Options", "Process Text Demo", "Load Preprocessed Data"]
         task_choice = st.selectbox("Choose Task", preprocessing_task)
-        if task_choice == "Data Overview":
-            st.markdown("This dataset consists of Vietnamese news articles collected from various Vietnamese online news portals such as Thanh Nien, VNExpress, BaoMoi, etc. The dataset was originally sourced from a MongoDB dump containing over 20 million articles.")
-            st.markdown("From this large dataset, our team extracted approximately 162,000 articles categorized into 13 distinct categorie and split into training, test and validation sets after preprocessing the data with 70%, 15% and 15% respectively.")
-            st.markdown("Link to dataset: https://github.com/binhvq/news-corpus")
-            st.image("images/sample_data.png", caption="Sample original data", use_column_width=True)
-            summary_df = pd.read_csv("assets/summary_data.csv")
-            st.dataframe(summary_df)
-            train_images = "images/article_by_categories_train_data.html"
-            test_images = "images/article_by_categories_test_data.html"
-            val_images = "images/article_by_categories_val_data.html"
-            plot_data(train_images, test_images, val_images)
-            st.image("images/token_length_distribution.png",caption="Distribution of Token Count per Sentence", use_column_width=True)
-        elif task_choice == "Process Text Demo":
+        
+        if task_choice == "Process Text Demo":
             st.markdown("**Preprocessing Steps:**")
             st.markdown("- Standardize Vietnamese words, convert to lower case")
             st.markdown("- Utilize techniques such as regular expressions to remove unwanted elements: html, links, emails, numbers,...")
@@ -272,7 +279,7 @@ def main():
                 st.success(preprocessed_news)
         elif task_choice == "Load Preprocessed Data":
             df = pd.read_json(PREPROCESSED_DATA, encoding='utf-8', lines=True)
-            st.dataframe(df.head(20), use_container_width=True)
+            st.dataframe(df.head(20), use_container_width=True, hide_index=True)
 
     # Feature Extration
     if choice == "Feature Extraction":
@@ -282,14 +289,22 @@ def main():
         task_choice = st.selectbox("Choose Model",feature_extraction_task)
         if task_choice == "PhoBert":
             st.markdown("**Feature Extraction Steps:**")
-            st.markdown("- Tokenize using PhoBert's Tokenizer. Note that when tokenizing we will add two special tokens, [CLS] and [SEP] at the beginning and end of the sentence.")
+            st.markdown("- Tokenize using PhoBert's Tokenizer. Note that when tokenizing we will add two special tokens, [CLS] and [SEP] at the beginning and end of the sentence. [CLS] (Classification Token): This token is added at the beginning of the sentence. It signals to PhoBERT that this is the start of a new sentence and helps the model understand the overall context of the sentence. [SEP] (Separator Token): This token is added at the end of the sentence. It acts as a separator, indicating the end of the input sentence.")
+            st.markdown("""
+            > Why use [CLS] and [SEP]?
+            >
+            > These special tokens help PhoBERT process sentences more effectively:
+            >
+            > - **Contextual Understanding:** [CLS] helps PhoBERT grasp the overall meaning of the sentence.
+            > - **Sentence Boundaries:** [SEP] clearly defines the start and end of each sentence, especially important when processing multiple sentences together.
+            """)
             st.markdown("- Insert the tokenized text sentence into the model with the attention mask. Attention mask helps the model only focus on words in the sentence and ignore words with additional padding. Added words are marked = 0")
             st.markdown("- Take the output and take the first output vector (which is in the special token position [CLS]) as a feature for the sentence to train or predict (depending on the phase).")
             phobert, tokenizer = load_bert()
             text = st.text_area("Enter Text","Type Here")
             if st.button("Execute"):
                 st.subheader("Sentence to ids")
-                padded, attention_mask = tokenize_text([text], tokenizer, max_len=256)
+                padded, attention_mask = tokenize_text(text.split(), tokenizer, max_len=256)
                 st.write("Padded Sequence:", padded)
                 st.write("Attention Mask:", attention_mask)
 
@@ -313,8 +328,8 @@ def main():
                     st.header("Predict")
                     processed_news = preprocess_text(news_text)
                     predicted_label, confidence_df = predict_label(processed_news, tokenizer, phobert, model, class_names, max_len)
-                    st.subheader("Confidence Per Label")
-                    st.dataframe(confidence_df, height=600, hide_index=True, use_container_width=True)
+                    st.subheader("Confidence per Label")
+                    st.dataframe(confidence_df, height=500, hide_index=True, use_container_width=True)
                     st.subheader("Predicted Label")
                     st.success(predicted_label)
                 
@@ -326,8 +341,8 @@ def main():
                     st.info(news_text)
                     st.header("Predict")
                     df_confidence, predicted_label = infer(news_text, tokenizer, models, class_names, max_len)
-                    st.subheader("Confidence Per Label")
-                    st.dataframe(df_confidence, height=600, hide_index=True, use_container_width=True)
+                    st.subheader("Confidence per Label")
+                    st.dataframe(df_confidence, height=500, hide_index=True, use_container_width=True)
                     st.subheader("Predicted Label")
                     st.success(predicted_label)
          if model_choice == "phobertbase":
@@ -338,8 +353,8 @@ def main():
                     st.info(news_text)
                     st.header("Predict")
                     df_confidence, predicted_label = infer(news_text, tokenizer, models, class_names, max_len)
-                    st.subheader("Confidence Per Label")
-                    st.dataframe(df_confidence, height=600, hide_index=True, use_container_width=True)
+                    st.subheader("Confidence per Label")
+                    st.dataframe(df_confidence, height=500, hide_index=True, use_container_width=True)
                     st.subheader("Predicted Label")
                     st.success(predicted_label)
     if choice == "Train and Evaluate Models":
@@ -353,7 +368,7 @@ def main():
                     class NewsClassifier(nn.Module):
                         def __init__(self, n_classes, model_name):
                             super(NewsClassifier, self).__init__()
-                            # Load a pre-trained BERT model
+                            # Load a pre-trained model
                             self.bert = AutoModel.from_pretrained(model_name)
                             # Dropout layer to prevent overfitting
                             self.drop = nn.Dropout(p=0.3)
@@ -364,7 +379,7 @@ def main():
                             nn.init.normal_(self.fc.bias, 0)
 
                         def forward(self, input_ids, attention_mask):
-                            # Get the output from the BERT model
+                            # Get the output from the model
                             last_hidden_state, output = self.bert(
                                 input_ids=input_ids,
                                 attention_mask=attention_mask,
@@ -489,17 +504,17 @@ def main():
               with col4:
                   st.markdown("**BiLSTM with PhoBert feature extraction**")
                   bilstm_report = pd.read_csv("assets/classification_report_bilstm_phobertbase.csv")
-                  st.dataframe(bilstm_report, height=600, hide_index=True, use_container_width=True)
+                  st.dataframe(bilstm_report, height=500, hide_index=True, use_container_width=True)
               
               with col5:
                   st.markdown("**phobertbase**")
                   phobertbase_report = pd.read_csv("assets/classification_report_phobertbase.csv")
-                  st.dataframe(phobertbase_report, height=600, hide_index=True, use_container_width=True)
+                  st.dataframe(phobertbase_report, height=500, hide_index=True, use_container_width=True)
               
               with col6:
                   st.markdown("**longformer-phobertbase**")
                   longformer_report = pd.read_csv("assets/classification_report_longformer.csv")
-                  st.dataframe(longformer_report, height=600, hide_index=True, use_container_width=True)
+                  st.dataframe(longformer_report, height=500, hide_index=True, use_container_width=True)
     if choice == "Introduction":
       st.markdown(
         """
