@@ -68,7 +68,7 @@ class NewsClassifier(nn.Module):
         x = self.fc(x)
         return x
 
-@st.cache_data
+@st.cache_resource
 def load_models(model_type):
     models = None
     model = None
@@ -315,48 +315,75 @@ def main():
 
     if choice == "Prediction":
          st.info("Predict with new text")
+         bilstm, tokenizer_bilstm, max_len_bilstm, phobert = load_models(model_type="bilstm_phobertbase")
+         longformer, tokenizer_longformer, max_len_longformer = load_models(model_type="longformer")
+         phobertbase, tokenizer_phobertbase, max_len_phobertbase = load_models(model_type="phobertbase")
+         news_text = st.text_area("Enter Text", "Type Here")
+         if st.button("Classify"):
+          processed_news = preprocess_text(news_text)
+          df_confidence_phobertbase, predicted_label_phobertbase = infer(news_text, tokenizer_phobertbase, phobertbase, class_names, max_len_phobertbase)
+          df_confidence_longformer, predicted_label_longformer = infer(news_text, tokenizer_longformer, longformer, class_names, max_len_longformer)
+          predicted_label_bilstm, confidence_df_bilstm = predict_label(processed_news, tokenizer_bilstm, phobert, bilstm, class_names, max_len_bilstm)
+          st.header("Original Text")
+          st.info(news_text)
+          st.header("Predict")
+          col4, col5, col6 = st.columns(3)  
+              
+          with col4:
+                  st.markdown("**BiLSTM with PhoBert feature extraction**")
+                  st.dataframe(confidence_df_bilstm, height=500, hide_index=True, use_container_width=True)
+                  st.success(predicted_label_bilstm)
+              
+          with col5:
+                  st.markdown("**phobertbase**")
+                  st.dataframe(df_confidence_phobertbase, height=500, hide_index=True, use_container_width=True)
+                  st.success(predicted_label_phobertbase)
+              
+          with col6:
+                  st.markdown("**longformer-phobertbase**")
+                  st.dataframe(df_confidence_longformer, height=500, hide_index=True, use_container_width=True)
+                  st.success(predicted_label_longformer)
+        #  all_dl_models = ["No Options", "BiLSTM + phobertbase", "longformer-phobertbase", "phobertbase"]
+        #  model_choice = st.selectbox("Choose Model", all_dl_models)
          
-         all_dl_models = ["No Options", "BiLSTM + phobertbase", "longformer-phobertbase", "phobertbase"]
-         model_choice = st.selectbox("Choose Model", all_dl_models)
-         
-         if model_choice == "BiLSTM + phobertbase":
-                model, tokenizer, max_len, phobert = load_models(model_type="bilstm_phobertbase")
-                news_text = st.text_area("Enter Text", "Type Here")
-                if st.button("Classify"):
-                    st.header("Original Text")
-                    st.info(news_text)
-                    st.header("Predict")
-                    processed_news = preprocess_text(news_text)
-                    predicted_label, confidence_df = predict_label(processed_news, tokenizer, phobert, model, class_names, max_len)
-                    st.subheader("Confidence per Label")
-                    st.dataframe(confidence_df, height=500, hide_index=True, use_container_width=True)
-                    st.subheader("Predicted Label")
-                    st.success(predicted_label)
+        #  if model_choice == "BiLSTM + phobertbase":
+        #         model, tokenizer, max_len, phobert = load_models(model_type="bilstm_phobertbase")
+        #         news_text = st.text_area("Enter Text", "Type Here")
+        #         if st.button("Classify"):
+        #             st.header("Original Text")
+        #             st.info(news_text)
+        #             st.header("Predict")
+        #             processed_news = preprocess_text(news_text)
+        #             predicted_label, confidence_df = predict_label(processed_news, tokenizer, phobert, model, class_names, max_len)
+        #             st.subheader("Confidence per Label")
+        #             st.dataframe(confidence_df, height=500, hide_index=True, use_container_width=True)
+        #             st.subheader("Predicted Label")
+        #             st.success(predicted_label)
                 
-         if model_choice == "longformer-phobertbase":
-                models, tokenizer, max_len = load_models(model_type="longformer")
-                news_text = st.text_area("Enter Text", "Type Here")
-                if st.button("Classify"):
-                    st.header("Original Text")
-                    st.info(news_text)
-                    st.header("Predict")
-                    df_confidence, predicted_label = infer(news_text, tokenizer, models, class_names, max_len)
-                    st.subheader("Confidence per Label")
-                    st.dataframe(df_confidence, height=500, hide_index=True, use_container_width=True)
-                    st.subheader("Predicted Label")
-                    st.success(predicted_label)
-         if model_choice == "phobertbase":
-                models, tokenizer, max_len = load_models(model_type="phobertbase")
-                news_text = st.text_area("Enter Text", "Type Here")
-                if st.button("Classify"):
-                    st.header("Original Text")
-                    st.info(news_text)
-                    st.header("Predict")
-                    df_confidence, predicted_label = infer(news_text, tokenizer, models, class_names, max_len)
-                    st.subheader("Confidence per Label")
-                    st.dataframe(df_confidence, height=500, hide_index=True, use_container_width=True)
-                    st.subheader("Predicted Label")
-                    st.success(predicted_label)
+        #  if model_choice == "longformer-phobertbase":
+        #         models, tokenizer, max_len = load_models(model_type="longformer")
+        #         news_text = st.text_area("Enter Text", "Type Here")
+        #         if st.button("Classify"):
+        #             st.header("Original Text")
+        #             st.info(news_text)
+        #             st.header("Predict")
+        #             df_confidence, predicted_label = infer(news_text, tokenizer, models, class_names, max_len)
+        #             st.subheader("Confidence per Label")
+        #             st.dataframe(df_confidence, height=500, hide_index=True, use_container_width=True)
+        #             st.subheader("Predicted Label")
+        #             st.success(predicted_label)
+        #  if model_choice == "phobertbase":
+        #         models, tokenizer, max_len = load_models(model_type="phobertbase")
+        #         news_text = st.text_area("Enter Text", "Type Here")
+        #         if st.button("Classify"):
+        #             st.header("Original Text")
+        #             st.info(news_text)
+        #             st.header("Predict")
+        #             df_confidence, predicted_label = infer(news_text, tokenizer, models, class_names, max_len)
+        #             st.subheader("Confidence per Label")
+        #             st.dataframe(df_confidence, height=500, hide_index=True, use_container_width=True)
+        #             st.subheader("Predicted Label")
+        #             st.success(predicted_label)
     if choice == "Train and Evaluate Models":
          st.info("Train and Evaluate Models")
          training_task = ["No Options", "Model Definitions", "Hyperparameters", "Result of Evaluation"]
